@@ -10,7 +10,7 @@ typedef struct list_node list_node;
 
 list_node* CreateLinkedList();
 void AddNode(list_node* head, void* data);
-void* Get(list_node* node);
+void* GetNext(list_node* node);
 int Contains(list_node* head, void* data);
 void DeleteNode(list_node* head, list_node* node);
 void DeleteLinkedList(list_node* head);

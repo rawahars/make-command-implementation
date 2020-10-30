@@ -3,17 +3,17 @@
 
 #include "linked_list.h"
 
-struct node{
+struct vertex{
     void* data;
     list_node* edges;
 };
 
-typedef struct node node;
+typedef struct vertex vertex;
 
-node* CreateVertex();
-void AddEdge(node* from, node* to);
-int HasEdge(node* from, node* to);
-void* GetData(node* vertex);
-void DeleteVertex(node* vertex)
+vertex* CreateVertex(void* data);
+void AddEdge(vertex* from, vertex* to);
+int HasEdge(vertex* from, vertex* to);
+void* GetData(vertex* vertex);
+void DeleteVertex(vertex* vertex);
 
 #endif

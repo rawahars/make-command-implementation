@@ -18,7 +18,7 @@ void AddNode(list_node* head, void* data){
     head->data = data;
 }
 
-void* Get(list_node* node){
+void* GetNext(list_node* node){
     if(node->next == NULL){
         return NULL;
     } else{
