@@ -42,3 +42,8 @@ vertex* createVertexNode(){
     newNode->edges = CreateLinkedList();
     return newNode;
 }
+
+int DetectCycleInGraph(vertex* start){
+    //To-do: Detect cycle and exit with error if one is found. You can use CycleInGraphError in error_handle module.
+    return 0;
+}
