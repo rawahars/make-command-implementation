@@ -5,7 +5,7 @@
 #include "text_parser.h"
 
 int filter(char* line);
-int isFirstCharacterIsLetterOrTab(char* line);
+int isFirstCharacterLetterOrTab(char* line);
 int hasOnlySpaces(char* line);
 char* extractLineFromFile(FILE* file);
 char* reallocateString(char* buffer, int len);
@@ -76,17 +76,22 @@ char* ParseCommandString(char* line){
 }
 
 int filter(char* line){
-    if(strlen(line) == 0 || hasOnlySpaces(line) || line[0] == '#' || isFirstCharacterIsLetterOrTab(line)){
+    if(strlen(line) == 0 || hasOnlySpaces(line) || line[0] == '#' || isFirstCharacterLetterOrTab(line)){
         return 0;
     }
     return 1;
 }
 
-int isFirstCharacterIsLetterOrTab(char* line){
+int isFirstCharacterLetterOrTab(char* line){
     int len = strlen(line);
-    if(isalnum(line[0]) || (len > 1 && line[0] == '\t' && isalnum(line[1])))
+    if(isalnum(line[0]))
         return 1;
-    else
+    else if(len > 1 && line[0] == '\t'){
+        if(isalnum(line[1]))
+            return 1;
+        else
+            TargetParsingError();
+    } else
         return 0;
 }
 
