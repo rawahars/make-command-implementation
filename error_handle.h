@@ -4,4 +4,5 @@
 void BufferOverflowError();
 void NullByteInLineError();
 void CycleInGraphError();
+void TargetParsingError();
 #endif

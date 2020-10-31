@@ -10,3 +10,7 @@ void NullByteInLineError(){
 void CycleInGraphError(){
 
 }
+
+void TargetParsingError(){
+
+}
