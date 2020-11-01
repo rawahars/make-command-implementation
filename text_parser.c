@@ -53,7 +53,7 @@ list_node* ParseCommandString(char* line){
 }
 
 int filter(char* line){
-    if(strlen(line) == 0 || hasOnlySpaces(line) || line[0] == '#' || isFirstCharacterLetterOrTab(line)){
+    if(strlen(line) == 0 || hasOnlySpaces(line) || line[0] == '#' || !isFirstCharacterLetterOrTab(line)){
         return 0;
     }
     return 1;
@@ -87,7 +87,7 @@ char* extractLineFromFile(FILE* file){
 
     while(1){
         ch = fgetc(file);
-
+        if(ch == '\r') continue;
         if(len >= MAX_BUFFER_SIZE){ // During buffer overflow exit with error
             free(buffer);
             BufferOverflowError();
@@ -112,11 +112,11 @@ char* reallocateString(char* buffer, int len){
     return final_str;
 }
 
-void split(list_node* head, char* str, int startIndex, int maxLen){
-    int initialIndex = startIndex;
+void split(list_node* head, char* str, int initialIndex, int maxLen){
+    int index;
     char* currStr = malloc(sizeof(char)*MAX_BUFFER_SIZE);
     char* newStr;
-    for(int index = startIndex; index < maxLen; index++){
+    for(index = initialIndex; index < maxLen; index++){
         if(str[index] == ' ' || str[index] == '\t'){
             if((index - initialIndex) == 0){
                 initialIndex++;

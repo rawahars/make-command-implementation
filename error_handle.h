@@ -5,4 +5,6 @@ void BufferOverflowError();
 void NullByteInLineError();
 void CycleInGraphError();
 void TargetParsingError();
+void InvalidCommandInMakefileError();
+void DuplicateRuleError();
 #endif

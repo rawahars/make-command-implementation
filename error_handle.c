@@ -14,3 +14,11 @@ void CycleInGraphError(){
 void TargetParsingError(){
 
 }
+
+void InvalidCommandInMakefileError(){
+
+}
+
+void DuplicateRuleError(){
+
+}
