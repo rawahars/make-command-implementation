@@ -1,15 +1,15 @@
 #include <stdlib.h>
 #include "linked_list.h"
 
-list_node* createNode();
+list_node *createNode();
 
-list_node* CreateLinkedList(){
+list_node *CreateLinkedList() {
     return createNode();
 }
 
-void AddNode(list_node* head, void* data){
-    list_node* temp = head->next;
-    while(temp != NULL){
+void AddNode(list_node *head, void *data) {
+    list_node *temp = head->next;
+    while (temp != NULL) {
         head = temp;
         temp = head->next;
     }
@@ -18,17 +18,17 @@ void AddNode(list_node* head, void* data){
     head->data = data;
 }
 
-void* GetNext(list_node* node){
-    if(node->next == NULL){
+void *GetNext(list_node *node) {
+    if (node->next == NULL) {
         return NULL;
-    } else{
+    } else {
         return node->next->data;
     }
 }
 
-int Contains(list_node* head, void* data){
-    while(head != NULL){
-        if(head->data == data){
+int Contains(list_node *head, void *data) {
+    while (head != NULL) {
+        if (head->data == data) {
             return 1;
         }
         head = head->next;
@@ -36,30 +36,39 @@ int Contains(list_node* head, void* data){
     return 0;
 }
 
-void DeleteNode(list_node* head, list_node* node){
-    list_node* temp = head->next;
-    while(temp != NULL && temp != node){
+void DeleteNode(list_node *head, list_node *node) {
+    list_node *temp = head->next;
+    while (temp != NULL && temp != node) {
         head = temp;
         temp = head->next;
     }
-    if(temp != NULL){
+    if (temp != NULL) {
         head->next = temp->next;
         free(temp);
     }
 }
 
-list_node* createNode(){
-    list_node* head = malloc(sizeof(struct list_node));
+list_node *createNode() {
+    list_node *head = malloc(sizeof(struct list_node));
     head->next = NULL;
     head->data = NULL;
     return head;
 }
 
-void DeleteLinkedList(list_node* head){
-    list_node* fast = head;
-    while(fast != NULL){
+void DeleteLinkedList(list_node *head) {
+    list_node *fast = head;
+    while (fast != NULL) {
         fast = head->next;
         free(head);
         head = fast;
     }
+}
+
+int GetLength(list_node *head) {
+    int len = -1;// Since we are starting with head which is a dummy node
+    while (head != NULL) {
+        head = head->next;
+        len++;
+    }
+    return len;
 }

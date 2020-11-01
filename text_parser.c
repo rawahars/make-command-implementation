@@ -5,10 +5,11 @@
 #include "text_parser.h"
 
 int filter(char* line);
-int isFirstCharacterIsLetterOrTab(char* line);
+int isFirstCharacterLetterOrTab(char* line);
 int hasOnlySpaces(char* line);
 char* extractLineFromFile(FILE* file);
 char* reallocateString(char* buffer, int len);
+void split(list_node* head, char* str, int startIndex, int maxLen);
 
 char* ReadLine(FILE* file){
     char* line = extractLineFromFile(file);
@@ -38,55 +39,36 @@ list_node* ParseTargetString(char* line){
     char* str = reallocateString(currStr, index);
     AddNode(target, str);
 
-    // Extract dependencies of the target
-    int initialIndex = index+1;
-    currStr = malloc(sizeof(char)*MAX_BUFFER_SIZE);
-    for(index = index+1; index < len; index++){
-        if(line[index] == ' ' || line[index] == '\t'){
-            if((index - initialIndex) == 0){
-                initialIndex++;
-            } else {
-                currStr[(index - initialIndex)] = '\0';
-                str = reallocateString(currStr, (index - initialIndex));
-                AddNode(target, str);
-                currStr = malloc(sizeof(char)*MAX_BUFFER_SIZE);
-                initialIndex = index + 1;
-            }
-        } else {
-            currStr[(index - initialIndex)] = line[index];
-        }
-    }
+    // Extract dependencies of the target by splitting them on whitespaces
+    split(target, line, index+1, len);
 
-    if((index - initialIndex) != 0){
-        currStr[len - initialIndex] = '\0';
-        str = reallocateString(currStr, (index - initialIndex));
-        AddNode(target, str);
-    }
     return target;
 }
 
-char* ParseCommandString(char* line){
+list_node* ParseCommandString(char* line){
+    list_node* command_list = CreateLinkedList();
     int len = strlen(line);
-    char* newCommand = malloc(sizeof(char)*len);
-    for(int i = 1; i < len; i++)
-        newCommand[i-1] = line[i];
-    newCommand[len-1] = '\0';
-    free(line);
-    return newCommand;
+    split(command_list, line, 1, len);
+    return command_list;
 }
 
 int filter(char* line){
-    if(strlen(line) == 0 || hasOnlySpaces(line) || line[0] == '#' || isFirstCharacterIsLetterOrTab(line)){
+    if(strlen(line) == 0 || hasOnlySpaces(line) || line[0] == '#' || isFirstCharacterLetterOrTab(line)){
         return 0;
     }
     return 1;
 }
 
-int isFirstCharacterIsLetterOrTab(char* line){
+int isFirstCharacterLetterOrTab(char* line){
     int len = strlen(line);
-    if(isalnum(line[0]) || (len > 1 && line[0] == '\t' && isalnum(line[1])))
+    if(isalnum(line[0]))
         return 1;
-    else
+    else if(len > 1 && line[0] == '\t'){
+        if(isalnum(line[1]))
+            return 1;
+        else
+            TargetParsingError();
+    } else
         return 0;
 }
 
@@ -128,4 +110,31 @@ char* reallocateString(char* buffer, int len){
     strcpy(final_str, buffer);
     free(buffer);
     return final_str;
+}
+
+void split(list_node* head, char* str, int startIndex, int maxLen){
+    int initialIndex = startIndex;
+    char* currStr = malloc(sizeof(char)*MAX_BUFFER_SIZE);
+    char* newStr;
+    for(int index = startIndex; index < maxLen; index++){
+        if(str[index] == ' ' || str[index] == '\t'){
+            if((index - initialIndex) == 0){
+                initialIndex++;
+            } else {
+                currStr[(index - initialIndex)] = '\0';
+                newStr = reallocateString(currStr, (index - initialIndex));
+                AddNode(head, newStr);
+                currStr = malloc(sizeof(char)*MAX_BUFFER_SIZE);
+                initialIndex = index + 1;
+            }
+        } else {
+            currStr[(index - initialIndex)] = str[index];
+        }
+    }
+
+    if((index - initialIndex) != 0){
+        currStr[maxLen - initialIndex] = '\0';
+        newStr = reallocateString(currStr, (index - initialIndex));
+        AddNode(head, newStr);
+    }
 }

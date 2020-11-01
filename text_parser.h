@@ -8,6 +8,6 @@
 
 char* ReadLine(FILE* file);
 list_node* ParseTargetString(char* line);
-char* ParseCommandString(char* line);
+list_node* ParseCommandString(char* line);
 
 #endif
