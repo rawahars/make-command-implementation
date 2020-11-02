@@ -9,5 +9,5 @@ void InvalidCommandInMakefileError();
 void DuplicateRuleError();
 void CommandExecutionFailedError(int exitCode);
 void RuleNotFoundError();
-void InvalidTargetDependencyError();
+void InvalidTargetDependencyError(char* error_msg);
 #endif

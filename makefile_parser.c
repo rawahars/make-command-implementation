@@ -70,6 +70,7 @@ void saveRule(list_node* list, rule* current_rule){
     if(vert == NULL){
         vert = CreateVertex(current_rule);
         AddNode(list, vert);
+        current_rule->isInitialized = 1;
     } else {
         //A vertex with same rule name exists
         rule* vert_data = (rule*) vert->data;
@@ -79,11 +80,11 @@ void saveRule(list_node* list, rule* current_rule){
         //In case of uninitialized rule, set the appropriate dependencies and commands
         vert_data->dependencies = current_rule->dependencies;
         vert_data->commands = current_rule->commands;
+        vert_data->isInitialized = 1;
     }
 
     //For new or eager loaded rule,we will have to set the dependencies represented as edges
     setDependenciesOfRule(list, vert, current_rule->dependencies);
-    current_rule->isInitialized = 1;
 }
 
 void setDependenciesOfRule(list_node* list, vertex* currentVertex, list_node* dependencies){

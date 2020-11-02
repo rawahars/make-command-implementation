@@ -1,6 +1,7 @@
 #ifndef ASSIGNMENT3_TEXT_PARSER_H
 #define ASSIGNMENT3_TEXT_PARSER_H
 
+#include <stdio.h>
 #include "error_handle.h"
 #include "linked_list.h"
 

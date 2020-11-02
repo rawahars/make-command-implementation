@@ -1,5 +1,5 @@
 #include "execution_engine.h"
-#include <stdlib.h> //exit
+#include <stdlib.h>
 #include <unistd.h>
 #include <sysexits.h>
 #include <errno.h>
@@ -23,7 +23,7 @@ void ExecuteExecutionGraph(list_node* list_vertices, char* execution_rule){
     }
     //Execute the graph from rule_vertex
     list_node* executed_rules = CreateLinkedList();
-    post_order_graph_traversal(executed_rules, rule_vertex);
+    post_order_graph_traversal(list_vertices, executed_rules, rule_vertex);
     DeleteLinkedList(executed_rules);
 }
 
@@ -46,10 +46,10 @@ void post_order_graph_traversal(list_node* all_vertices, list_node* visited, ver
         if(FindRuleVertex(all_vertices, curr_rule->target_name) == NULL){
             //Means it is a file. Check for that and raise error if not present.
             if(access(curr_rule->target_name, F_OK) == -1)
-                InvalidTargetDependencyError();
+                InvalidTargetDependencyError(curr_rule->target_name);
         } else {
             //Uninitialized vertex in graph means that it is an invalid target
-            InvalidTargetDependencyError();
+            InvalidTargetDependencyError(curr_rule->target_name);
         }
     }
     execute_rule(curr_rule);
@@ -76,7 +76,7 @@ void execute_rule(rule* current_rule){
 int execute_command(command* cmd){
     list_node* head = cmd->command_args;
     int len = GetLength(head);
-    char** cmd_args = malloc(sizeof(char*)*(len+1));
+    char** cmd_args = malloc(sizeof(char*)*(len+2));
 
     int index = 1;
     char* curr_cmd_arg;
@@ -88,6 +88,7 @@ int execute_command(command* cmd){
         }
         head = head->next;
     }
+    cmd_args[len+1] = NULL;
     int ret_status = execute(cmd_args);
     free(cmd_args);
     return ret_status;
@@ -109,5 +110,6 @@ int execute(char** args){
 
     //Wait on child
     waitpid(pid, &status, 0);
+    printf("Status of execution: cmd: %s : code %d\n",args[1],status);
     return status;
 }
