@@ -14,10 +14,12 @@ int main(int argc, char *argv[]) {
 
     char **makefile_args = malloc(sizeof(char *) * 2);
     findMakefileTargetAndName(argc, argv, makefile_args);
+    if (makefile_args[1] == NULL || access(makefile_args[1], F_OK) == -1)
+        FileNotFoundError(makefile_args[1]);
     FILE *file = fopen(makefile_args[1], "r");
 
     list_node *execution_graph = ParseMakefile(file);
-    if(DetectCycleInGraph(execution_graph))
+    if (DetectCycleInGraph(execution_graph))
         CycleInGraphError();
     ExecuteExecutionGraph(execution_graph, makefile_args[0]);
 
