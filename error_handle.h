@@ -7,4 +7,7 @@ void CycleInGraphError();
 void TargetParsingError();
 void InvalidCommandInMakefileError();
 void DuplicateRuleError();
+void CommandExecutionFailedError(int exitCode);
+void RuleNotFoundError();
+void InvalidTargetDependencyError();
 #endif

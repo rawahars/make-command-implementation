@@ -7,7 +7,6 @@ rule* initializeRule(char* target_name, list_node* dependencies, int isInitializ
 void saveRule(list_node* list, rule* current_rule);
 void setDependenciesOfRule(list_node* list, vertex* vert, list_node* dependencies);
 command* parseCommand(list_node* list);
-vertex* findRuleVertex(list_node* list, char* current_rule_name);
 
 list_node* ParseMakefile(FILE* file){
     list_node* list_of_vertices = CreateLinkedList();
@@ -48,10 +47,26 @@ list_node* ParseMakefile(FILE* file){
     return list_of_vertices;
 }
 
+vertex* FindRuleVertex(list_node* list, char* current_rule_name){
+    vertex* vert;
+    rule* vert_data;
+
+    while(list != NULL){
+        vert = (vertex*) GetNext(list);
+        if(vert != NULL){
+            vert_data = (rule*) vert->data;
+            if(vert_data != NULL && strcmp(vert_data->target_name, current_rule_name) == 0)
+                return vert;
+        }
+        list = list->next;
+    }
+    return NULL;
+}
+
 void saveRule(list_node* list, rule* current_rule){
     if(current_rule == NULL) return;
 
-    vertex* vert = findRuleVertex(list, current_rule->target_name);
+    vertex* vert = FindRuleVertex(list, current_rule->target_name);
     if(vert == NULL){
         vert = CreateVertex(current_rule);
         AddNode(list, vert);
@@ -80,7 +95,7 @@ void setDependenciesOfRule(list_node* list, vertex* currentVertex, list_node* de
         if(dependency_name != NULL){
             //Check if a rule exists with this name. If so then add an edge to that vertex from current vertex
             //If not then eagerly load an uninitialized rule into a vertex and create edge to this vertex
-            dependency_vertex = findRuleVertex(list, dependency_name);
+            dependency_vertex = FindRuleVertex(list, dependency_name);
             if(dependency_vertex == NULL){
                 dependency_rule = initializeRule(dependency_name, NULL, 0);
                 dependency_vertex = CreateVertex(dependency_rule);
@@ -90,22 +105,6 @@ void setDependenciesOfRule(list_node* list, vertex* currentVertex, list_node* de
         }
         dependencies = dependencies->next;
     }
-}
-
-vertex* findRuleVertex(list_node* list, char* current_rule_name){
-    vertex* vert;
-    rule* vert_data;
-
-    while(list != NULL){
-        vert = (vertex*) GetNext(list);
-        if(vert != NULL){
-            vert_data = (rule*) vert->data;
-            if(vert_data != NULL && strcmp(vert_data->target_name, current_rule_name) == 0)
-                return vert;
-        }
-        list = list->next;
-    }
-    return NULL;
 }
 
 rule* initializeRule(char* target_name, list_node* dependencies, int isInitialized){

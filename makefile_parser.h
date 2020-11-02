@@ -21,6 +21,7 @@ typedef struct{
     list_node* command_args;
 } command;
 
+vertex* FindRuleVertex(list_node* list, char* current_rule_name);
 list_node* ParseMakefile(FILE* file);
 
 #endif

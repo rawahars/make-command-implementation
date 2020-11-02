@@ -87,7 +87,7 @@ char* extractLineFromFile(FILE* file){
 
     while(1){
         ch = fgetc(file);
-        if(ch == '\r') continue;
+
         if(len >= MAX_BUFFER_SIZE){ // During buffer overflow exit with error
             free(buffer);
             BufferOverflowError();
