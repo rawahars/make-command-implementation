@@ -132,7 +132,7 @@ int execute_command(command *cmd) {
 }
 
 int execute(char **args) {
-    int pid, status, ret;
+    int pid, status;
     if ((pid = fork()) < 0) {
         CommandExecutionFailedError(EX_OSERR);
     }

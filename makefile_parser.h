@@ -6,22 +6,23 @@
 #include "linked_list.h"
 #include "error_handle.h"
 
-typedef struct{
-    char* target_name;
+typedef struct {
+    char *target_name;
     // isInitialized is set to 1 only after the rule's dependencies and commands are set
     int isInitialized;
     // Each dependency would be a rule itself
-    list_node* dependencies;
+    list_node *dependencies;
     // List of commands for this rule
-    list_node* commands;
+    list_node *commands;
 } rule;
 
-typedef struct{
-    char* command_name;
-    list_node* command_args;
+typedef struct {
+    char *command_name;
+    list_node *command_args;
 } command;
 
-vertex* FindRuleVertex(list_node* list, char* current_rule_name);
-list_node* ParseMakefile(FILE* file);
+vertex *FindRuleVertex(list_node *list, char *current_rule_name);
+
+list_node *ParseMakefile(FILE *file);
 
 #endif
