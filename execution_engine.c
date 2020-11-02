@@ -110,6 +110,6 @@ int execute(char** args){
 
     //Wait on child
     waitpid(pid, &status, 0);
-    printf("Status of execution: cmd: %s : code %d\n",args[1],status);
+
     return status;
 }

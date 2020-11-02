@@ -2,6 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void InvalidArgumentsError(char* error_msg){
+    printf("%s", error_msg);
+    exit(-1);
+}
+
 void BufferOverflowError(){
     printf("BufferOverflowError\n");
     exit(-1);

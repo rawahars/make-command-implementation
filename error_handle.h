@@ -1,6 +1,7 @@
 #ifndef ASSIGNMENT3_ERROR_HANDLE_H
 #define ASSIGNMENT3_ERROR_HANDLE_H
 
+void InvalidArgumentsError(char* error_msg);
 void BufferOverflowError();
 void NullByteInLineError();
 void CycleInGraphError();
