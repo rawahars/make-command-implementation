@@ -15,6 +15,6 @@ void AddEdge(vertex* from, vertex* to);
 int HasEdge(vertex* from, vertex* to);
 void* GetData(vertex* vertex);
 void DeleteVertex(vertex* vertex);
-int DetectCycleInGraph(vertex* start);
+int DetectCycleInGraph(list_node* start);
 
 #endif

@@ -17,6 +17,8 @@ int main(int argc, char *argv[]) {
     FILE *file = fopen(makefile_args[1], "r");
 
     list_node *execution_graph = ParseMakefile(file);
+    if(DetectCycleInGraph(execution_graph))
+        CycleInGraphError();
     ExecuteExecutionGraph(execution_graph, makefile_args[0]);
 
     fclose(file);
