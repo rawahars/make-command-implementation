@@ -59,6 +59,7 @@ int post_order_graph_traversal(list_node *all_vertices, list_node *visited, vert
         }
     }
 
+    int are_all_edges_target = 1;
     vertex *next_vertex;
     list_node *edges = curr_vertex->edges;
 
@@ -71,9 +72,13 @@ int post_order_graph_traversal(list_node *all_vertices, list_node *visited, vert
         if (next_vertex != NULL) {
             if (post_order_graph_traversal(all_vertices, visited, next_vertex, curr_rule->target_name))
                 isThisRuleOutOfDate = 1;
+            if (!((rule *) GetData(next_vertex))->isInitialized)
+                are_all_edges_target = 0;
         }
         edges = edges->next;
     }
+
+    if (are_all_edges_target) isThisRuleOutOfDate = 1;
 
     if (isThisRuleOutOfDate)
         execute_rule(curr_rule);
@@ -87,7 +92,9 @@ int getLastModificationTime(char *filename) {
         FileNotFoundError(filename);
 
     struct stat file_stat;
-    stat(filename, &file_stat);
+    int retval = stat(filename, &file_stat);
+    if (retval == -1)
+        StatError(errno);
     int last_modification = file_stat.st_mtime;
     return last_modification;
 }
@@ -113,6 +120,7 @@ int execute_command(command *cmd) {
     list_node *head = cmd->command_args;
     int len = GetLength(head);
     char **cmd_args = malloc(sizeof(char *) * (len + 2));
+    ValidateMemoryAllocationError(cmd_args);
 
     int index = 1;
     char *curr_cmd_arg;
@@ -145,7 +153,9 @@ int execute(char **args) {
     }
 
     //Wait on child
-    waitpid(pid, &status, 0);
+    int retVal = waitpid(pid, &status, 0);
+    if (retVal == -1)
+        WaitPIDError(errno);
 
     return status;
 }

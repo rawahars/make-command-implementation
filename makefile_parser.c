@@ -89,7 +89,7 @@ void PrintExecutionGraph(list_node *current_node) {
         }
         dependencies = dependencies->next;
     }
-    printf("\n");
+    printf("\n\n");
 
     PrintExecutionGraph(current_node->next);
 }
@@ -141,6 +141,7 @@ void setDependenciesOfRule(list_node *list, vertex *currentVertex, list_node *de
 
 rule *initializeRule(char *target_name, list_node *dependencies, int isInitialized) {
     rule *new_rule = malloc(sizeof(rule));
+    ValidateMemoryAllocationError(new_rule);
     new_rule->target_name = target_name;
     new_rule->dependencies = dependencies;
     new_rule->commands = CreateLinkedList();
@@ -150,6 +151,7 @@ rule *initializeRule(char *target_name, list_node *dependencies, int isInitializ
 
 command *parseCommand(list_node *list) {
     command *parsed_command = malloc(sizeof(command));
+    ValidateMemoryAllocationError(parsed_command);
     parsed_command->command_args = list;
 
     char *data = (char *) GetNext(list); //This is the command name
@@ -163,7 +165,7 @@ int isVertexInList(vertex *curr_vertex, list_node *list) {
     if (list->next == NULL) return 0;
     list_node *temp = list->next;
     rule *current_vertex_rule = (rule *) curr_vertex->data;
-    while (temp != NULL/* && temp->data != NULL*/) {
+    while (temp != NULL) {
         vertex *list_vertex = (vertex *) temp->data;
         rule *list_vertex_rule = (rule *) list_vertex->data;
         if (strcmp(current_vertex_rule->target_name, list_vertex_rule->target_name) == 0) {
@@ -224,7 +226,8 @@ int DetectCycleInGraph(list_node *start) {
             return 1;
         }
         temp = temp->next;
+        DeleteLinkedList(curr_list);
     }
-
+    DeleteLinkedList(global_list);
     return 0;
 }

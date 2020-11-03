@@ -1,6 +1,8 @@
 #ifndef ASSIGNMENT3_LINKED_LIST_H
 #define ASSIGNMENT3_LINKED_LIST_H
 
+#include "error_handle.h"
+
 struct list_node {
     void *data;
     struct list_node *next;

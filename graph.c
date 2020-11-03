@@ -39,6 +39,7 @@ void DeleteVertex(vertex *vertex) {
 
 vertex *createVertexNode() {
     vertex *newNode = malloc(sizeof(vertex));
+    ValidateMemoryAllocationError(newNode);
     newNode->data = NULL;
     newNode->edges = CreateLinkedList();
     return newNode;

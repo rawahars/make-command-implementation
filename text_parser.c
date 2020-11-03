@@ -30,7 +30,10 @@ list_node *ParseTargetString(char *line) {
 
     // Extract the target name from the target line
     char *currStr = malloc(sizeof(char) * MAX_BUFFER_SIZE);
+    ValidateMemoryAllocationError(currStr);
     for (; index < len; index++) {
+        if (line[index] == ' ' || line[index] == '\t')
+            TargetParsingError();
         if (line[index] == ':') {
             currStr[index] = '\0';
             break;
@@ -86,6 +89,7 @@ int hasOnlySpaces(char *line) {
 
 char *extractLineFromFile(FILE *file) {
     char *buffer = malloc(sizeof(char) * MAX_BUFFER_SIZE);
+    ValidateMemoryAllocationError(buffer);
     int len = 0;
     char ch;
 
@@ -111,6 +115,7 @@ char *extractLineFromFile(FILE *file) {
 
 char *reallocateString(char *buffer, int len) {
     char *final_str = malloc(sizeof(char) * len);
+    ValidateMemoryAllocationError(final_str);
     strcpy(final_str, buffer);
     free(buffer);
     return final_str;
@@ -119,6 +124,7 @@ char *reallocateString(char *buffer, int len) {
 void split(list_node *head, char *str, int initialIndex, int maxLen) {
     int index;
     char *currStr = malloc(sizeof(char) * MAX_BUFFER_SIZE);
+    ValidateMemoryAllocationError(currStr);
     char *newStr;
     for (index = initialIndex; index < maxLen; index++) {
         if (str[index] == ' ' || str[index] == '\t') {
@@ -129,6 +135,7 @@ void split(list_node *head, char *str, int initialIndex, int maxLen) {
                 newStr = reallocateString(currStr, (index - initialIndex));
                 AddNode(head, newStr);
                 currStr = malloc(sizeof(char) * MAX_BUFFER_SIZE);
+                ValidateMemoryAllocationError(currStr);
                 initialIndex = index + 1;
             }
         } else {

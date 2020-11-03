@@ -1,6 +1,24 @@
 #include "error_handle.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+void ValidateMemoryAllocationError(void *arg) {
+    if (arg == NULL) {
+        fprintf(stderr, "Memory could not be allocated using malloc/calloc. Exiting!\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void StatError(int errorNo) {
+    fprintf(stderr, "Error getting file stats. Error description: %s. \nExiting!\n", strerror(errorNo));
+    exit(EXIT_FAILURE);
+}
+
+void WaitPIDError(int errorNo) {
+    fprintf(stderr, "Error while waiting for child process. Error msg: %s.\nExiting!\n", strerror(errorNo));
+    exit(EXIT_FAILURE);
+}
 
 void InvalidArgumentsError(char *error_msg) {
     printf("%s", error_msg);

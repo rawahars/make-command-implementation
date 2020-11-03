@@ -50,6 +50,7 @@ void DeleteNode(list_node *head, list_node *node) {
 
 list_node *createNode() {
     list_node *head = malloc(sizeof(struct list_node));
+    ValidateMemoryAllocationError(head);
     head->next = NULL;
     head->data = NULL;
     return head;

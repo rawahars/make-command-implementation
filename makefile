@@ -12,10 +12,10 @@ $(PROGNAME): $(OBJECTS)
 error_handle.o: error_handle.h error_handle.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -c error_handle.c
 
-linked_list.o: linked_list.h linked_list.c
+linked_list.o: error_handle.h linked_list.h linked_list.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -c linked_list.c
 
-graph.o: linked_list.h graph.h graph.c
+graph.o: error_handle.h linked_list.h graph.h graph.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -c graph.c
 
 text_parser.o: error_handle.h linked_list.h text_parser.h text_parser.c

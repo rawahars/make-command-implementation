@@ -12,17 +12,30 @@ char *findMakefile(char *name);
 
 int main(int argc, char *argv[]) {
 
+    //makefile_args contain target_name and makefile_name
     char **makefile_args = malloc(sizeof(char *) * 2);
+    ValidateMemoryAllocationError(makefile_args);
+
+    //Find the appropriate target and file name based on the input args
     findMakefileTargetAndName(argc, argv, makefile_args);
+    //If filename passed using -f is not present then raise an error
     if (makefile_args[1] == NULL || access(makefile_args[1], F_OK) == -1)
         FileNotFoundError(makefile_args[1]);
-    FILE *file = fopen(makefile_args[1], "r");
 
+    FILE *file = fopen(makefile_args[1], "r");
+    if (file == NULL) {
+        FileNotFoundError("");
+    }
+
+    //Generate execution graph by calling ParseMakefile. Then check for any cyclic dependencies in the graph.
     list_node *execution_graph = ParseMakefile(file);
     if (DetectCycleInGraph(execution_graph))
         CycleInGraphError();
+
+    //Execute the execution graph from the node which has the target name as provided (In case of NULL, we use the first rule).
     ExecuteExecutionGraph(execution_graph, makefile_args[0]);
 
+    //Close the file and perform other cleanup
     fclose(file);
     free(makefile_args);
     return 1;
