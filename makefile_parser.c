@@ -65,6 +65,29 @@ vertex *FindRuleVertex(list_node *list, char *current_rule_name) {
     return NULL;
 }
 
+void PrintExecutionGraph(list_node* current_node){
+    if(current_node == NULL) return;
+    vertex* node = (vertex*) GetNext(current_node);
+    rule* curr_rule = (rule*)GetData(node);
+    printf("Current Node: %s\t . Initialization Status: %d\n",curr_rule->target_name, curr_rule->isInitialized);
+    printf("Dependencies for %s are: ", curr_rule->target_name);
+
+    list_node* dependencies = node->edges;
+    vertex* dependent_vertex;
+    rule* dep_rule;
+    while(dependencies != NULL) {
+        dependent_vertex = (vertex*) GetNext(dependencies);
+        if(dependent_vertex != NULL) {
+            dep_rule = (rule*) GetData(dependent_vertex);
+            printf("%s\t",dep_rule->target_name);
+        }
+        dependencies = dependencies->next;
+    }
+    printf("\n");
+
+    PrintExecutionGraph(current_node->next);
+}
+
 void saveRule(list_node *list, rule *current_rule) {
     if (current_rule == NULL) return;
 

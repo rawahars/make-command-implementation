@@ -21,8 +21,10 @@ typedef struct {
     list_node *command_args;
 } command;
 
+list_node *ParseMakefile(FILE *file);
+
 vertex *FindRuleVertex(list_node *list, char *current_rule_name);
 
-list_node *ParseMakefile(FILE *file);
+void PrintExecutionGraph(list_node* current_node);
 
 #endif
