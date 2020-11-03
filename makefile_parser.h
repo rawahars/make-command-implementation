@@ -14,11 +14,17 @@ typedef struct {
     list_node *dependencies;
     // List of commands for this rule
     list_node *commands;
+    // Index at which this target appears in the makefile
+    int target_index;
+    // Original contents of the line
+    char *target_str;
 } rule;
 
 typedef struct {
     char *command_name;
     list_node *command_args;
+    int cmd_index;
+    char *cmd_string;
 } command;
 
 list_node *ParseMakefile(FILE *file);

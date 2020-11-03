@@ -3,13 +3,13 @@
 #include <string.h>
 #include "makefile_parser.h"
 
-rule *initializeRule(char *target_name, list_node *dependencies, int isInitialized);
+rule *initializeRule(char *target_name, list_node *dependencies, int isInitialized, int index, char *line);
 
 void saveRule(list_node *list, rule *current_rule);
 
-void setDependenciesOfRule(list_node *list, vertex *vert, list_node *dependencies);
+void setDependenciesOfRule(list_node *list, vertex *currentVertex, list_node *dependencies);
 
-command *parseCommand(list_node *list);
+command *parseCommand(list_node *list, int index, char *line);
 
 int isVertexInList(vertex *curr_vertex, list_node *list);
 
@@ -20,12 +20,14 @@ int dfs(vertex *curr_vertex, list_node *global_list, list_node *curr_list);
 list_node *ParseMakefile(FILE *file) {
     list_node *list_of_vertices = CreateLinkedList();
     char *line;
+    int index = 0;
     list_node *parsed_string;
     int isTargetString = 0;
     rule *current_rule = NULL;
 
     while (feof(file) == 0) {
         line = ReadLine(file);
+        index++;
 
         if (line == NULL) continue;
         else if (line[0] == '\t') {
@@ -44,10 +46,10 @@ list_node *ParseMakefile(FILE *file) {
             saveRule(list_of_vertices, current_rule);
             char *rule_name = (char *) GetNext(parsed_string);
             DeleteNode(parsed_string, parsed_string->next);
-            current_rule = initializeRule(rule_name, parsed_string, 1);
+            current_rule = initializeRule(rule_name, parsed_string, 1, index, line);
         } else {
             //Add this command to rule object
-            command *parsed_command = parseCommand(parsed_string);
+            command *parsed_command = parseCommand(parsed_string, index, line);
             AddNode(current_rule->commands, parsed_command);
         }
     }
@@ -112,6 +114,8 @@ void saveRule(list_node *list, rule *current_rule) {
         vert_data->dependencies = current_rule->dependencies;
         vert_data->commands = current_rule->commands;
         vert_data->isInitialized = 1;
+        vert_data->target_index = current_rule->target_index;
+        vert_data->target_str = current_rule->target_str;
     }
 
     //For new or eager loaded rule,we will have to set the dependencies represented as edges
@@ -129,7 +133,7 @@ void setDependenciesOfRule(list_node *list, vertex *currentVertex, list_node *de
             //If not then eagerly load an uninitialized rule into a vertex and create edge to this vertex
             dependency_vertex = FindRuleVertex(list, dependency_name);
             if (dependency_vertex == NULL) {
-                dependency_rule = initializeRule(dependency_name, NULL, 0);
+                dependency_rule = initializeRule(dependency_name, NULL, 0, -1, NULL);
                 dependency_vertex = CreateVertex(dependency_rule);
                 AddNode(list, dependency_vertex);
             }
@@ -139,17 +143,19 @@ void setDependenciesOfRule(list_node *list, vertex *currentVertex, list_node *de
     }
 }
 
-rule *initializeRule(char *target_name, list_node *dependencies, int isInitialized) {
+rule *initializeRule(char *target_name, list_node *dependencies, int isInitialized, int index, char *line) {
     rule *new_rule = malloc(sizeof(rule));
     ValidateMemoryAllocationError(new_rule);
     new_rule->target_name = target_name;
     new_rule->dependencies = dependencies;
     new_rule->commands = CreateLinkedList();
     new_rule->isInitialized = isInitialized;
+    new_rule->target_index = index;
+    new_rule->target_str = line;
     return new_rule;
 }
 
-command *parseCommand(list_node *list) {
+command *parseCommand(list_node *list, int index, char *line) {
     command *parsed_command = malloc(sizeof(command));
     ValidateMemoryAllocationError(parsed_command);
     parsed_command->command_args = list;
@@ -157,6 +163,9 @@ command *parseCommand(list_node *list) {
     char *data = (char *) GetNext(list); //This is the command name
     parsed_command->command_name = data;
     DeleteNode(list, list->next);
+
+    parsed_command->cmd_index = index;
+    parsed_command->cmd_string = line;
 
     return parsed_command;
 }
