@@ -138,7 +138,7 @@ int execute(char **args) {
 
     if (!pid) { //Child
         //Execute arguments
-        if (execvp(args[0], args + 1) < 0)
+        if (execvp(args[0], args) < 0)
             exit(errno);
         else
             exit(1);
