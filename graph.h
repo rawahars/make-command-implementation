@@ -20,6 +20,4 @@ void *GetData(vertex *vertex);
 
 void DeleteVertex(vertex *vertex);
 
-int DetectCycleInGraph(list_node *start);
-
 #endif

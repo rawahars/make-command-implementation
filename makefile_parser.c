@@ -11,6 +11,12 @@ void setDependenciesOfRule(list_node *list, vertex *vert, list_node *dependencie
 
 command *parseCommand(list_node *list);
 
+int isVertexInList(vertex *curr_vertex, list_node *list);
+
+void removeVertexFromList(list_node *list, vertex *curr_vertex);
+
+int dfs(vertex *curr_vertex, list_node *global_list, list_node *curr_list);
+
 list_node *ParseMakefile(FILE *file) {
     list_node *list_of_vertices = CreateLinkedList();
     char *line;
@@ -65,21 +71,21 @@ vertex *FindRuleVertex(list_node *list, char *current_rule_name) {
     return NULL;
 }
 
-void PrintExecutionGraph(list_node* current_node){
-    vertex* node = (vertex*) GetNext(current_node);
-    if(node == NULL) return;
-    rule* curr_rule = (rule*)GetData(node);
-    printf("Current Node: %s\t . Initialization Status: %d\n",curr_rule->target_name, curr_rule->isInitialized);
+void PrintExecutionGraph(list_node *current_node) {
+    vertex *node = (vertex *) GetNext(current_node);
+    if (node == NULL) return;
+    rule *curr_rule = (rule *) GetData(node);
+    printf("Current Node: %s\t . Initialization Status: %d\n", curr_rule->target_name, curr_rule->isInitialized);
     printf("Dependencies for %s are: ", curr_rule->target_name);
 
-    list_node* dependencies = node->edges;
-    vertex* dependent_vertex;
-    rule* dep_rule;
-    while(dependencies != NULL) {
-        dependent_vertex = (vertex*) GetNext(dependencies);
-        if(dependent_vertex != NULL) {
-            dep_rule = (rule*) GetData(dependent_vertex);
-            printf("%s\t",dep_rule->target_name);
+    list_node *dependencies = node->edges;
+    vertex *dependent_vertex;
+    rule *dep_rule;
+    while (dependencies != NULL) {
+        dependent_vertex = (vertex *) GetNext(dependencies);
+        if (dependent_vertex != NULL) {
+            dep_rule = (rule *) GetData(dependent_vertex);
+            printf("%s\t", dep_rule->target_name);
         }
         dependencies = dependencies->next;
     }
@@ -151,4 +157,74 @@ command *parseCommand(list_node *list) {
     DeleteNode(list, list->next);
 
     return parsed_command;
+}
+
+int isVertexInList(vertex *curr_vertex, list_node *list) {
+    if (list->next == NULL) return 0;
+    list_node *temp = list->next;
+    rule *current_vertex_rule = (rule *) curr_vertex->data;
+    while (temp != NULL/* && temp->data != NULL*/) {
+        vertex *list_vertex = (vertex *) temp->data;
+        rule *list_vertex_rule = (rule *) list_vertex->data;
+        if (strcmp(current_vertex_rule->target_name, list_vertex_rule->target_name) == 0) {
+            return 1;
+        }
+        temp = temp->next;
+    }
+    return 0;
+}
+
+void removeVertexFromList(list_node *list, vertex *curr_vertex) {
+    list_node *temp = list->next;
+    rule *current_vertex_rule = (rule *) curr_vertex->data;
+    while (temp != NULL) {
+        vertex *list_vertex = (vertex *) temp->data;
+        rule *list_vertex_rule = (rule *) list_vertex->data;
+        if (strcmp(current_vertex_rule->target_name, list_vertex_rule->target_name) == 0) {
+            list->next = temp->next;
+            free(temp);
+            break;
+        }
+        list = temp;
+        temp = list->next;
+    }
+}
+
+int dfs(vertex *curr_vertex, list_node *global_list, list_node *curr_list) {
+    if (curr_vertex == NULL) return 0;
+    if (isVertexInList(curr_vertex, global_list)) {
+        return 0;
+    } else if (isVertexInList(curr_vertex, curr_list)) {
+        return 1;
+    }
+    list_node *edges = curr_vertex->edges;
+    AddNode(curr_list, curr_vertex);
+    vertex *next_vertex;
+    while (edges != NULL) {
+        next_vertex = (vertex *) GetNext(edges);
+        if (dfs(next_vertex, global_list, curr_list) == 1) {
+            return 1;
+        }
+        edges = edges->next;
+    }
+    if (isVertexInList(curr_vertex, global_list) == 0) {
+        AddNode(global_list, curr_vertex);
+    }
+    removeVertexFromList(curr_list, curr_vertex);
+    return 0;
+}
+
+int DetectCycleInGraph(list_node *start) {
+    list_node *temp = start->next;
+    list_node *global_list = CreateLinkedList();
+    while (temp != NULL) {
+        list_node *curr_list = CreateLinkedList();
+        vertex *v = (vertex *) temp->data;
+        if (dfs(v, global_list, curr_list) == 1) {
+            return 1;
+        }
+        temp = temp->next;
+    }
+
+    return 0;
 }

@@ -25,6 +25,8 @@ list_node *ParseMakefile(FILE *file);
 
 vertex *FindRuleVertex(list_node *list, char *current_rule_name);
 
-void PrintExecutionGraph(list_node* current_node);
+void PrintExecutionGraph(list_node *current_node);
+
+int DetectCycleInGraph(list_node *start);
 
 #endif
