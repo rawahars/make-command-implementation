@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include "error_handle.h"
 #include "makefile_parser.h"
 #include "execution_engine.h"
@@ -18,13 +19,10 @@ int main(int argc, char *argv[]) {
 
     //Find the appropriate target and file name based on the input args
     findMakefileTargetAndName(argc, argv, makefile_args);
-    //If filename passed using -f is not present then raise an error
-    if (makefile_args[1] == NULL || access(makefile_args[1], F_OK) == -1)
-        FileNotFoundError(makefile_args[1]);
 
     FILE *file = fopen(makefile_args[1], "r");
     if (file == NULL) {
-        FileNotFoundError("");
+        FileOpenError(makefile_args[1], errno);
     }
 
     //Generate execution graph by calling ParseMakefile. Then check for any cyclic dependencies in the graph.
@@ -43,7 +41,7 @@ int main(int argc, char *argv[]) {
 
 void findMakefileTargetAndName(int argc, char *argv[], char **makefile_args) {
     if (argc < 1 || argc > 4)
-        InvalidArgumentsError("Error: Number of arguments should be between 0 and 3. Exiting!\n");
+        InvalidArgumentsError("Error: Number of arguments to main should be between 0 and 3.\nExiting!");
 
     if (argc == 1) {
         //Usage as "make537"
@@ -60,12 +58,12 @@ void findMakefileTargetAndName(int argc, char *argv[], char **makefile_args) {
             makefile_args[1] = findMakefile(argv[2]);
         } else
             InvalidArgumentsError(
-                    "Error: If 2 arguments are being passed then first argument should be -f. Exiting!\n");
+                    "Error: If 2 arguments are being passed to main then first argument should be -f.\nExiting!");
     } else if (argc == 4) {
         //Usage as "make537 -f custom_makefile clean"
         if (strcmp(argv[1], "-f") != 0)
             InvalidArgumentsError(
-                    "Error: If 3 arguments are being passed then first argument should be -f. Exiting!\n");
+                    "Error: If 3 arguments are being passed to main then first argument should be -f.\nExiting!");
         makefile_args[0] = argv[3];
         makefile_args[1] = findMakefile(argv[2]);
     }
@@ -79,11 +77,15 @@ char *findMakefile(char *name) {
             return makefile_1;
         else if (access(makefile_2, F_OK) != -1)
             return makefile_2;
-        else return NULL;
-    } else {
-        if (access(name, F_OK) == -1)
+        else {
+            FileNotFoundError("makefile and Makefile", -1, NULL);
             return NULL;
-        else
+        }
+    } else {
+        if (access(name, F_OK) == -1) {
+            FileNotFoundError(name, -1, NULL);
+            return NULL;
+        } else
             return name;
     }
 }

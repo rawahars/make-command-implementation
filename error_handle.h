@@ -1,19 +1,19 @@
 #ifndef ASSIGNMENT3_ERROR_HANDLE_H
 #define ASSIGNMENT3_ERROR_HANDLE_H
 
-void ValidateMemoryAllocationError(void *arg);
+#define ERROR_TEMPLATE "%d: %s: %s\n"
 
-void StatError(int errorNo);
+void StatError(int line_index, char *line_str, char *filename, int errorNo);
 
-void WaitPIDError(int errorNo);
+void WaitPIDError(int line_index, char *line_str, int errorNo);
 
-void InvalidArgumentsError(char *error_msg);
+void FileNotFoundError(char *filename, int line_index, char *line_str);
 
-void FileNotFoundError(char *error_msg);
+void FileOpenError(char *filename, int errorNo);
 
-void BufferOverflowError();
+void BufferOverflowError(int index, char *line);
 
-void NullByteInLineError();
+void NullByteInLineError(int index, char *line);
 
 void CycleInGraphError();
 
@@ -28,5 +28,12 @@ void CommandExecutionFailedError(int exitCode);
 void RuleNotFoundError();
 
 void InvalidTargetDependencyError(char *error_msg);
+
+/**
+ * These are generic errors which are independent of the makefile. Therefore we are not following the standard format.
+ * */
+void ValidateMemoryAllocationError(void *arg);
+
+void InvalidArgumentsError(char *error_msg);
 
 #endif

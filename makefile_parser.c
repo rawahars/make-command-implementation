@@ -26,8 +26,8 @@ list_node *ParseMakefile(FILE *file) {
     rule *current_rule = NULL;
 
     while (feof(file) == 0) {
-        line = ReadLine(file);
         index++;
+        line = ReadLine(file, index);
 
         if (line == NULL) continue;
         else if (line[0] == '\t') {
@@ -123,6 +123,7 @@ void saveRule(list_node *list, rule *current_rule) {
 }
 
 void setDependenciesOfRule(list_node *list, vertex *currentVertex, list_node *dependencies) {
+    rule *current_rule = (rule *) (GetData(currentVertex));
     char *dependency_name;
     vertex *dependency_vertex;
     rule *dependency_rule;
@@ -133,7 +134,8 @@ void setDependenciesOfRule(list_node *list, vertex *currentVertex, list_node *de
             //If not then eagerly load an uninitialized rule into a vertex and create edge to this vertex
             dependency_vertex = FindRuleVertex(list, dependency_name);
             if (dependency_vertex == NULL) {
-                dependency_rule = initializeRule(dependency_name, NULL, 0, -1, NULL);
+                dependency_rule = initializeRule(dependency_name, NULL, 0, current_rule->target_index,
+                                                 current_rule->target_str);
                 dependency_vertex = CreateVertex(dependency_rule);
                 AddNode(list, dependency_vertex);
             }

@@ -9,14 +9,14 @@ int isFirstCharacterLetterOrTab(char *line);
 
 int hasOnlySpaces(char *line);
 
-char *extractLineFromFile(FILE *file);
+char *extractLineFromFile(FILE *file, int index);
 
 char *reallocateString(char *buffer, int len);
 
 void split(list_node *head, char *str, int startIndex, int maxLen);
 
-char *ReadLine(FILE *file) {
-    char *line = extractLineFromFile(file);
+char *ReadLine(FILE *file, int index) {
+    char *line = extractLineFromFile(file, index);
     if (!filter(line)) {
         return NULL;
     }
@@ -87,7 +87,7 @@ int hasOnlySpaces(char *line) {
     return 1;
 }
 
-char *extractLineFromFile(FILE *file) {
+char *extractLineFromFile(FILE *file, int index) {
     char *buffer = malloc(sizeof(char) * MAX_BUFFER_SIZE);
     ValidateMemoryAllocationError(buffer);
     int len = 0;
@@ -97,10 +97,11 @@ char *extractLineFromFile(FILE *file) {
         ch = fgetc(file);
 
         if (len >= MAX_BUFFER_SIZE) { // During buffer overflow exit with error
-            free(buffer);
-            BufferOverflowError();
+            buffer[MAX_BUFFER_SIZE - 1] = '\0';
+            BufferOverflowError(index, buffer);
         } else if (ch == '\0') { // If a null byte is found in line then exit with error
-            NullByteInLineError();
+            buffer[len] = '\0';
+            NullByteInLineError(index, buffer);
         } else if (ch == EOF || ch == '\n') {
             buffer[len++] = '\0';
             break;

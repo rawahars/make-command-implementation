@@ -7,7 +7,7 @@
 
 #define MAX_BUFFER_SIZE 4096
 
-char *ReadLine(FILE *file);
+char *ReadLine(FILE *file, int index);
 
 list_node *ParseTargetString(char *line);
 

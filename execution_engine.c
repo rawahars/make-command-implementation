@@ -8,13 +8,13 @@
 
 int post_order_graph_traversal(list_node *all_vertices, list_node *visited, vertex *curr_vertex, char *parent_target);
 
-int getLastModificationTime(char *filename);
+int getLastModificationTime(char *filename, int line_index, char *line_str);
 
 void execute_rule(rule *current_rule);
 
 int execute_command(command *cmd);
 
-int execute(char **args);
+int execute(char **args, int line_index, char *cmd_str);
 
 void ExecuteExecutionGraph(list_node *list_vertices, char *execution_rule) {
     vertex *rule_vertex;
@@ -48,10 +48,12 @@ int post_order_graph_traversal(list_node *all_vertices, list_node *visited, vert
         else {
             //Check if time stamp of the file is greater than target.
             //return from here since it is a file.
-            int curr_file_timestamp = getLastModificationTime(curr_rule->target_name);
+            int curr_file_timestamp = getLastModificationTime(curr_rule->target_name, curr_rule->target_index,
+                                                              curr_rule->target_str);
             if (access(parent_target, F_OK) == -1)
                 return 1;
-            int parent_target_timestamp = getLastModificationTime(parent_target);
+            int parent_target_timestamp = getLastModificationTime(parent_target, curr_rule->target_index,
+                                                                  curr_rule->target_str);
             if (curr_file_timestamp > parent_target_timestamp)
                 return 1;
             else
@@ -87,14 +89,14 @@ int post_order_graph_traversal(list_node *all_vertices, list_node *visited, vert
     return isThisRuleOutOfDate;
 }
 
-int getLastModificationTime(char *filename) {
+int getLastModificationTime(char *filename, int line_index, char *line_str) {
     if (access(filename, F_OK) == -1)
-        FileNotFoundError(filename);
+        FileNotFoundError(filename, line_index, line_str);
 
     struct stat file_stat;
     int retval = stat(filename, &file_stat);
     if (retval == -1)
-        StatError(errno);
+        StatError(line_index, line_str, filename, errno);
     int last_modification = file_stat.st_mtime;
     return last_modification;
 }
@@ -133,12 +135,12 @@ int execute_command(command *cmd) {
         head = head->next;
     }
     cmd_args[len + 1] = NULL;
-    int ret_status = execute(cmd_args);
+    int ret_status = execute(cmd_args, cmd->cmd_index, cmd->cmd_string);
     free(cmd_args);
     return ret_status;
 }
 
-int execute(char **args) {
+int execute(char **args, int line_index, char *cmd_str) {
     int pid, status;
     if ((pid = fork()) < 0) {
         CommandExecutionFailedError(EX_OSERR);
@@ -153,9 +155,9 @@ int execute(char **args) {
     }
 
     //Wait on child
-    int retVal = waitpid(pid, &status, 0);
+    int retVal = waitpid(-1, &status, 0);
     if (retVal == -1)
-        WaitPIDError(errno);
+        WaitPIDError(line_index, cmd_str, errno);
 
     return status;
 }
