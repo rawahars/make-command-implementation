@@ -9,7 +9,7 @@
 
 char *ReadLine(FILE *file, int index);
 
-list_node *ParseTargetString(char *line);
+list_node *ParseTargetString(char *line, int line_index);
 
 list_node *ParseCommandString(char *line);
 

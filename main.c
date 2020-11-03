@@ -27,8 +27,7 @@ int main(int argc, char *argv[]) {
 
     //Generate execution graph by calling ParseMakefile. Then check for any cyclic dependencies in the graph.
     list_node *execution_graph = ParseMakefile(file);
-    if (DetectCycleInGraph(execution_graph))
-        CycleInGraphError();
+    DetectCycleInGraph(execution_graph);
 
     //Execute the execution graph from the node which has the target name as provided (In case of NULL, we use the first rule).
     ExecuteExecutionGraph(execution_graph, makefile_args[0]);

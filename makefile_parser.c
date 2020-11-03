@@ -33,11 +33,11 @@ list_node *ParseMakefile(FILE *file) {
         else if (line[0] == '\t') {
             parsed_string = ParseCommandString(line);
             if (current_rule == NULL) {
-                InvalidCommandInMakefileError();
+                InvalidCommandInMakefileError(index, line);
             }
             isTargetString = 0;
         } else {
-            parsed_string = ParseTargetString(line);
+            parsed_string = ParseTargetString(line, index);
             isTargetString = 1;
         }
 
@@ -109,7 +109,7 @@ void saveRule(list_node *list, rule *current_rule) {
         rule *vert_data = (rule *) vert->data;
         //Check if it was initialized or it was eager loaded without initialization
         if (vert_data->isInitialized)
-            DuplicateRuleError();
+            DuplicateRuleError(current_rule->target_index, current_rule->target_str);
         //In case of uninitialized rule, set the appropriate dependencies and commands
         vert_data->dependencies = current_rule->dependencies;
         vert_data->commands = current_rule->commands;
@@ -208,6 +208,8 @@ int dfs(vertex *curr_vertex, list_node *global_list, list_node *curr_list) {
     if (isVertexInList(curr_vertex, global_list)) {
         return 0;
     } else if (isVertexInList(curr_vertex, curr_list)) {
+        rule *curr_rule = (rule *) (GetData(curr_vertex));
+        CycleInGraphError(curr_rule->target_index, curr_rule->target_str);
         return 1;
     }
     list_node *edges = curr_vertex->edges;

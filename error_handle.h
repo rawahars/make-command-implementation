@@ -15,19 +15,19 @@ void BufferOverflowError(int index, char *line);
 
 void NullByteInLineError(int index, char *line);
 
-void CycleInGraphError();
+void CycleInGraphError(int index, char *line);
 
-void TargetParsingError();
+void TargetParsingError(int index, char *line, char *error_msg);
 
-void InvalidCommandInMakefileError();
+void InvalidCommandInMakefileError(int index, char *line);
 
-void DuplicateRuleError();
+void DuplicateRuleError(int index, char *line);
 
-void CommandExecutionFailedError(int exitCode);
+void CommandExecutionFailedError(int index, char *line, int errNo);
 
-void RuleNotFoundError();
+void RuleNotFoundError(char *invalid_rule);
 
-void InvalidTargetDependencyError(char *error_msg);
+void InvalidTargetDependencyError(int line_index, char *line_str, char *dep_name);
 
 /**
  * These are generic errors which are independent of the makefile. Therefore we are not following the standard format.

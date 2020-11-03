@@ -3,9 +3,9 @@
 #include <ctype.h>
 #include "text_parser.h"
 
-int filter(char *line);
+int filter(char *line, int index);
 
-int isFirstCharacterLetterOrTab(char *line);
+int isFirstCharacterLetterOrTab(char *line, int index);
 
 int hasOnlySpaces(char *line);
 
@@ -17,13 +17,13 @@ void split(list_node *head, char *str, int startIndex, int maxLen);
 
 char *ReadLine(FILE *file, int index) {
     char *line = extractLineFromFile(file, index);
-    if (!filter(line)) {
+    if (!filter(line, index)) {
         return NULL;
     }
     return line;
 }
 
-list_node *ParseTargetString(char *line) {
+list_node *ParseTargetString(char *line, int line_index) {
     list_node *target = CreateLinkedList();
     int len = strlen(line);
     int index = 0;
@@ -33,7 +33,7 @@ list_node *ParseTargetString(char *line) {
     ValidateMemoryAllocationError(currStr);
     for (; index < len; index++) {
         if (line[index] == ' ' || line[index] == '\t')
-            TargetParsingError();
+            TargetParsingError(line_index, line, "invalid format of line");
         if (line[index] == ':') {
             currStr[index] = '\0';
             break;
@@ -41,7 +41,7 @@ list_node *ParseTargetString(char *line) {
         currStr[index] = line[index];
     }
     if (index == len) {// No : found in the target string
-        TargetParsingError();
+        TargetParsingError(line_index, line, "invalid format of line");
     }
     char *str = reallocateString(currStr, index);
     AddNode(target, str);
@@ -59,14 +59,14 @@ list_node *ParseCommandString(char *line) {
     return command_list;
 }
 
-int filter(char *line) {
-    if (strlen(line) == 0 || hasOnlySpaces(line) || line[0] == '#' || !isFirstCharacterLetterOrTab(line)) {
+int filter(char *line, int index) {
+    if (strlen(line) == 0 || hasOnlySpaces(line) || line[0] == '#' || !isFirstCharacterLetterOrTab(line, index)) {
         return 0;
     }
     return 1;
 }
 
-int isFirstCharacterLetterOrTab(char *line) {
+int isFirstCharacterLetterOrTab(char *line, int index) {
     int len = strlen(line);
     if (isalnum(line[0]))
         return 1;
@@ -74,7 +74,7 @@ int isFirstCharacterLetterOrTab(char *line) {
         if (isalnum(line[1]))
             return 1;
         else
-            TargetParsingError();
+            TargetParsingError(index, line, "first character should be alphanumeric");
     }
     return 0;
 }

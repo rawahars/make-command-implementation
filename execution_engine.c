@@ -25,7 +25,7 @@ void ExecuteExecutionGraph(list_node *list_vertices, char *execution_rule) {
         //Find the rule in the graph
         rule_vertex = FindRuleVertex(list_vertices, execution_rule);
         if (rule_vertex == NULL)
-            RuleNotFoundError();
+            RuleNotFoundError(execution_rule);
     }
     //Execute the graph from rule_vertex
     list_node *executed_rules = CreateLinkedList();
@@ -44,7 +44,7 @@ int post_order_graph_traversal(list_node *all_vertices, list_node *visited, vert
     if (!curr_rule->isInitialized) {
         //Check if it is a file. Check for that and raise error if not present.
         if (access(curr_rule->target_name, F_OK) == -1)
-            InvalidTargetDependencyError(curr_rule->target_name);
+            InvalidTargetDependencyError(curr_rule->target_index, curr_rule->target_str, curr_rule->target_name);
         else {
             //Check if time stamp of the file is greater than target.
             //return from here since it is a file.
@@ -111,7 +111,7 @@ void execute_rule(rule *current_rule) {
         if (cmd != NULL) {
             retval = execute_command(cmd);
             if (retval != 0) {
-                CommandExecutionFailedError(retval);
+                CommandExecutionFailedError(cmd->cmd_index, cmd->cmd_string, retval);
             }
         }
         cmd_list = cmd_list->next;
@@ -143,15 +143,14 @@ int execute_command(command *cmd) {
 int execute(char **args, int line_index, char *cmd_str) {
     int pid, status;
     if ((pid = fork()) < 0) {
-        CommandExecutionFailedError(EX_OSERR);
+        CommandExecutionFailedError(line_index, cmd_str, errno);
     }
 
     if (!pid) { //Child
         //Execute arguments
         if (execvp(args[0], args) < 0)
-            exit(errno);
-        else
-            exit(1);
+            _exit(errno);
+        _exit(1);
     }
 
     //Wait on child
@@ -159,5 +158,5 @@ int execute(char **args, int line_index, char *cmd_str) {
     if (retVal == -1)
         WaitPIDError(line_index, cmd_str, errno);
 
-    return status;
+    return WEXITSTATUS(status);
 }

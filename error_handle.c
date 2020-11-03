@@ -18,39 +18,39 @@ void NullByteInLineError(int index, char *line) {
     exit(EXIT_FAILURE);
 }
 
-void CycleInGraphError() {
-    printf("CycleInGraphError\n");
-    exit(-1);
+void CycleInGraphError(int index, char *line) {
+    fprintf(stderr, ERROR_TEMPLATE, index, "cycle detected in makefile", line);
+    exit(EXIT_FAILURE);
 }
 
-void TargetParsingError() {
-    printf("TargetParsingError\n");
-    exit(-1);
+void TargetParsingError(int index, char *line, char *error_msg) {
+    fprintf(stderr, ERROR_TEMPLATE, index, error_msg, line);
+    exit(EXIT_FAILURE);
 }
 
-void InvalidCommandInMakefileError() {
-    printf("InvalidCommandInMakefileError\n");
-    exit(-1);
+void InvalidCommandInMakefileError(int index, char *line) {
+    fprintf(stderr, ERROR_TEMPLATE, index, "command is not part of any target", line);
+    exit(EXIT_FAILURE);
 }
 
-void DuplicateRuleError() {
-    printf("DuplicateRuleError\n");
-    exit(-1);
+void DuplicateRuleError(int index, char *line) {
+    fprintf(stderr, ERROR_TEMPLATE, index, "Duplicate rule found", line);
+    exit(EXIT_FAILURE);
 }
 
-void CommandExecutionFailedError(int exitCode) {
-    printf("CommandExecutionFailedError\n");
-    exit(-1);
+void CommandExecutionFailedError(int index, char *line, int errNo) {
+    fprintf(stderr, "%d: command could not be executed. Error message is - %s: %s\n", index, strerror(errNo), line);
+    exit(EXIT_FAILURE);
 }
 
-void RuleNotFoundError() {
-    printf("RuleNotFoundError\n");
-    exit(-1);
+void RuleNotFoundError(char *invalid_rule) {
+    fprintf(stderr, "%s: invalid target name\nExiting!\n", invalid_rule);
+    exit(EXIT_FAILURE);
 }
 
-void InvalidTargetDependencyError(char *error_msg) {
-    printf("InvalidTargetDependencyError: %s\n", error_msg);
-    exit(-1);
+void InvalidTargetDependencyError(int line_index, char *line_str, char *dep_name) {
+    fprintf(stderr, "%d: Invalid target dependency of %s: %s\n", line_index, dep_name, line_str);
+    exit(EXIT_FAILURE);
 }
 
 void FileOpenError(char *filename, int errorNo) {
