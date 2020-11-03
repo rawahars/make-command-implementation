@@ -66,8 +66,8 @@ vertex *FindRuleVertex(list_node *list, char *current_rule_name) {
 }
 
 void PrintExecutionGraph(list_node* current_node){
-    if(current_node == NULL) return;
     vertex* node = (vertex*) GetNext(current_node);
+    if(node == NULL) return;
     rule* curr_rule = (rule*)GetData(node);
     printf("Current Node: %s\t . Initialization Status: %d\n",curr_rule->target_name, curr_rule->isInitialized);
     printf("Dependencies for %s are: ", curr_rule->target_name);
