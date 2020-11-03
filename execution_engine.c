@@ -42,21 +42,20 @@ int post_order_graph_traversal(list_node *all_vertices, list_node *visited, vert
 
     //Means that it is possibly a file or invalid rule entry
     if (!curr_rule->isInitialized) {
-        if (FindRuleVertex(all_vertices, curr_rule->target_name) == NULL) {
-            //Means it is a file. Check for that and raise error if not present.
-            if (access(curr_rule->target_name, F_OK) == -1)
-                InvalidTargetDependencyError(curr_rule->target_name);
-            else {
-                //Check if time stamp of the file is greater than target.
-                //return from here since it is a file.
-                if (getLastModificationTime(curr_rule->target_name) < getLastModificationTime(parent_target))
-                    return 1;
-                else
-                    return 0;
-            }
-        } else {
-            //Uninitialized vertex in graph means that it is an invalid target
+        //Check if it is a file. Check for that and raise error if not present.
+        if (access(curr_rule->target_name, F_OK) == -1)
             InvalidTargetDependencyError(curr_rule->target_name);
+        else {
+            //Check if time stamp of the file is greater than target.
+            //return from here since it is a file.
+            int curr_file_timestamp = getLastModificationTime(curr_rule->target_name);
+            if (access(parent_target, F_OK) == -1)
+                return 1;
+            int parent_target_timestamp = getLastModificationTime(parent_target);
+            if (curr_file_timestamp > parent_target_timestamp)
+                return 1;
+            else
+                return 0;
         }
     }
 
