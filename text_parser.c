@@ -27,17 +27,23 @@ list_node *ParseTargetString(char *line, int line_index) {
     list_node *target = CreateLinkedList();
     int len = strlen(line);
     int index = 0;
+    int whitespace_encountered = 0;
 
     // Extract the target name from the target line
     char *currStr = malloc(sizeof(char) * MAX_BUFFER_SIZE);
     ValidateMemoryAllocationError(currStr);
     for (; index < len; index++) {
-        if (line[index] == ' ' || line[index] == '\t')
-            TargetParsingError(line_index, line, "invalid format of line");
+        if (line[index] == ' ' || line[index] == '\t') {
+            whitespace_encountered = 1;
+            continue;
+        }
         if (line[index] == ':') {
             currStr[index] = '\0';
             break;
         }
+        if(whitespace_encountered && (line[index] != ' ' && line[index] != '\t'))
+            TargetParsingError(line_index, line, "invalid format of line");
+
         currStr[index] = line[index];
     }
     if (index == len) {// No : found in the target string
