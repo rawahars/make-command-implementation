@@ -1,0 +1,60 @@
+This is original work of Harsh Rawat (CSLogin: harsh-rawat and netid: hrawat2) and Sidharth Gurbani (CSLogin: gurbani and netid: gurbani) for Assignment 3 (CS 537 Fall 2020).
+
+Problem Description-
+-------------------
+This project entails building a simple version of make command.
+Our command called make537 will read a makefile and following the specifications in the file, it will execute commands.
+
+
+Usage
+-----
+Run the following command in the source folder to build the project-
+"make all"
+
+Then run the executable using-
+"make537"
+or
+"make537 <target>"
+or
+"make537 -f <makefile_name>"
+or
+"make537 -f <makefile_name> <target>"
+
+Problem Solution-
+----------------
+The entire problem has been divided into 2 parts-
+1. Building an execution graph
+2. Executing the graph
+
+*** Building an execution graph
+This part of the project involves-
+- Parsing the makefile into rules. In case of error, we raise appropriate error.
+- Building a graph structure from the rules. Each rule has a vertex and is connected to other dependent rule vertexes using edges.
+- The result of this part is a graph which encapsulates the makefile specification.
+- We then test if the built graph has any cycles.
+
+*** Executing the graph
+This part of the project involves-
+- Traversing the graph in the post order manner and executing the rules.
+- The rules are executed based on make rules.
+- In case of any error, we raise appropriate error and exit.
+
+Different parts of the solution-
+--------------------------------
+-- linked_list module
+It is an implementation of the linked list data structure.
+
+-- graph module
+It is an implementation of the graph data structure
+
+-- text_parser module
+It parses each line from the makefile. It also checks for the errors which can occur while parsing the lines.
+
+-- makefile_parser module
+It parses the makefile to generate an execution graph. It is also responsible to detect any cycles existent in the graph.
+
+-- execution_engine module
+It is responsible for taking the execution graph and execute the specifications as per the make rules.
+
+-- error_handler module
+It is responsible for all the error handling in the project
