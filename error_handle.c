@@ -14,7 +14,7 @@ void BufferOverflowError(int index, char *line) {
 }
 
 void NullByteInLineError(int index, char *line) {
-    fprintf(stderr, ERROR_TEMPLATE, index, "line size exceeds max buffer size", line);
+    fprintf(stderr, ERROR_TEMPLATE, index, "null byte found while parsing the line", line);
     exit(EXIT_FAILURE);
 }
 
