@@ -1,3 +1,12 @@
+# Harsh Rawat, harsh-rawat, hrawat2
+# Sidharth Gurbani, gurbani, gurbani
+#
+# This is the makefile for Assignment 3 of CS537 in Fall 2020 offering
+# Run "make all" to build the source code
+# The executable file is named make537
+#
+#
+
 PROGNAME = make537
 CC      = gcc
 CFLAGS = -Wall -pedantic -Wextra

@@ -1,8 +1,16 @@
+/**
+ * @author Harsh Rawat, harsh-rawat, hrawat2
+ * @author Sidharth Gurbani, gurbani, gurbani
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "makefile_parser.h"
 
+/**
+ * These are the internal methods used in this module
+ * */
 rule *initializeRule(char *target_name, list_node *dependencies, int isInitialized, int index, char *line);
 
 void saveRule(list_node *list, rule *current_rule);
@@ -17,6 +25,9 @@ void removeVertexFromList(list_node *list, vertex *curr_vertex);
 
 int dfs(vertex *curr_vertex, list_node *global_list, list_node *curr_list);
 
+/**
+ * This method is used to parse the makefile into an execution graph
+ * */
 list_node *ParseMakefile(FILE *file) {
     list_node *list_of_vertices = CreateLinkedList();
     char *line;
@@ -25,14 +36,18 @@ list_node *ParseMakefile(FILE *file) {
     int isTargetString = 0;
     rule *current_rule = NULL;
 
+    //iterate till the end of file is reached and parse each line into a rule
     while (feof(file) == 0) {
         index++;
+        //read line from the file
         line = ReadLine(file, index);
 
+        //Based on whether the line is a target or command, we call the corresponding method of text_parser
+        //In case of errors, we raise appropriate error
         if (line == NULL) continue;
         else if (line[0] == '\t') {
             parsed_string = ParseCommandString(line);
-            if (current_rule == NULL) {
+            if (current_rule == NULL) { //Command appeared before any target
                 InvalidCommandInMakefileError(index, line);
             }
             isTargetString = 0;
@@ -41,26 +56,31 @@ list_node *ParseMakefile(FILE *file) {
             isTargetString = 1;
         }
 
+        //for each target rule, save the previous one and initialize a fresh rule
         if (isTargetString) {
-            //Save the last rule and initialize fresh rule
             saveRule(list_of_vertices, current_rule);
             char *rule_name = (char *) GetNext(parsed_string);
-            DeleteNode(parsed_string, parsed_string->next);
+            DeleteNode(parsed_string, parsed_string->next); // rule_name is not present in the dependencies list
             current_rule = initializeRule(rule_name, parsed_string, 1, index, line);
         } else {
-            //Add this command to rule object
+            //In case of command, we add that to the current running rule
             command *parsed_command = parseCommand(parsed_string, index, line);
             AddNode(current_rule->commands, parsed_command);
         }
     }
+    //At the end, we save the absolute last rule and return the execution graph
     saveRule(list_of_vertices, current_rule);
     return list_of_vertices;
 }
 
+/**
+ * This method is used to find if the given rule_name vertex is present in the graph
+ * */
 vertex *FindRuleVertex(list_node *list, char *current_rule_name) {
     vertex *vert;
     rule *vert_data;
 
+    //Iterate over all the nodes of the graph and check if the rule_name matches the given rule_name
     while (list != NULL) {
         vert = (vertex *) GetNext(list);
         if (vert != NULL) {
@@ -73,6 +93,10 @@ vertex *FindRuleVertex(list_node *list, char *current_rule_name) {
     return NULL;
 }
 
+/**
+ * This method can be used to print the execution graph.
+ * We usually use this for diagnostic purposes
+ * */
 void PrintExecutionGraph(list_node *current_node) {
     vertex *node = (vertex *) GetNext(current_node);
     if (node == NULL) return;
@@ -83,6 +107,7 @@ void PrintExecutionGraph(list_node *current_node) {
     list_node *dependencies = node->edges;
     vertex *dependent_vertex;
     rule *dep_rule;
+    //For the current vertex, find its dependencies and iterate over them to find the dependency name
     while (dependencies != NULL) {
         dependent_vertex = (vertex *) GetNext(dependencies);
         if (dependent_vertex != NULL) {
@@ -93,12 +118,17 @@ void PrintExecutionGraph(list_node *current_node) {
     }
     printf("\n\n");
 
+    //Go to next node and print it as well
     PrintExecutionGraph(current_node->next);
 }
 
+/**
+ * This is an internal method which can be used to save a rule to the current graph
+ * */
 void saveRule(list_node *list, rule *current_rule) {
     if (current_rule == NULL) return;
 
+    //If a vertex with given name exists then add current rule's data to that else create a new vertex with the rule
     vertex *vert = FindRuleVertex(list, current_rule->target_name);
     if (vert == NULL) {
         vert = CreateVertex(current_rule);
@@ -122,11 +152,16 @@ void saveRule(list_node *list, rule *current_rule) {
     setDependenciesOfRule(list, vert, current_rule->dependencies);
 }
 
+/**
+ * This is an internal method which is used to set all the dependencies of a given rule.
+ * If the corresponding rule vertex is not present then we will eager load it with initializationStatus as 0.
+ * */
 void setDependenciesOfRule(list_node *list, vertex *currentVertex, list_node *dependencies) {
     rule *current_rule = (rule *) (GetData(currentVertex));
     char *dependency_name;
     vertex *dependency_vertex;
     rule *dependency_rule;
+    //We create edges to all the dependencies of the given rule
     while (dependencies != NULL) {
         dependency_name = (char *) GetNext(dependencies);
         if (dependency_name != NULL) {
@@ -145,6 +180,9 @@ void setDependenciesOfRule(list_node *list, vertex *currentVertex, list_node *de
     }
 }
 
+/**
+ * This method is used to initialize a new rule with the given parameters
+ * */
 rule *initializeRule(char *target_name, list_node *dependencies, int isInitialized, int index, char *line) {
     rule *new_rule = malloc(sizeof(rule));
     ValidateMemoryAllocationError(new_rule);
@@ -157,14 +195,18 @@ rule *initializeRule(char *target_name, list_node *dependencies, int isInitializ
     return new_rule;
 }
 
+/**
+ * This method is used to parse a command as a list to a command struct
+ * */
 command *parseCommand(list_node *list, int index, char *line) {
     command *parsed_command = malloc(sizeof(command));
     ValidateMemoryAllocationError(parsed_command);
     parsed_command->command_args = list;
 
+    //Add command name to separate field and args to the list
     char *data = (char *) GetNext(list); //This is the command name
     parsed_command->command_name = data;
-    DeleteNode(list, list->next);
+    DeleteNode(list, list->next);//Delete the command name from the list
 
     parsed_command->cmd_index = index;
     parsed_command->cmd_string = line;

@@ -1,3 +1,8 @@
+/**
+ * @author Harsh Rawat, harsh-rawat, hrawat2
+ * @author Sidharth Gurbani, gurbani, gurbani
+ */
+
 #ifndef ASSIGNMENT3_TEXT_PARSER_H
 #define ASSIGNMENT3_TEXT_PARSER_H
 

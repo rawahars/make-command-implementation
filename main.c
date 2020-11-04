@@ -1,3 +1,8 @@
+/**
+ * @author Harsh Rawat, harsh-rawat, hrawat2
+ * @author Sidharth Gurbani, gurbani, gurbani
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,10 +12,17 @@
 #include "makefile_parser.h"
 #include "execution_engine.h"
 
+/**
+ * These are internal methods used in this main file
+ * */
 void findMakefileTargetAndName(int argc, char *argv[], char **makefile_args);
 
 char *findMakefile(char *name);
 
+/**
+ * main method of this project.
+ * We parse the makefile to build an execution graph and then we execute it
+ * */
 int main(int argc, char *argv[]) {
 
     //makefile_args contain target_name and makefile_name
@@ -38,6 +50,10 @@ int main(int argc, char *argv[]) {
     return 1;
 }
 
+/**
+ * This method is used to find the makefile name and target from the arguments passed to main
+ * We can pass 0,1,2 or 3 parameters. In case of incorrect number or format of parameters, we raise an error
+ * */
 void findMakefileTargetAndName(int argc, char *argv[], char **makefile_args) {
     if (argc < 1 || argc > 4)
         InvalidArgumentsError("Error: Number of arguments to main should be between 0 and 3.\nExiting!");
@@ -68,6 +84,10 @@ void findMakefileTargetAndName(int argc, char *argv[], char **makefile_args) {
     }
 }
 
+/**
+ * This method is used to find the name of appropriate makefile
+ * If we have passed a name then we check for its presence, else we check for makefile or Makefile
+ * */
 char *findMakefile(char *name) {
     if (name == NULL) {
         char *makefile_1 = "makefile";

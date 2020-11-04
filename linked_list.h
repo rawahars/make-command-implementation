@@ -1,10 +1,17 @@
+/**
+ * @author Harsh Rawat, harsh-rawat, hrawat2
+ * @author Sidharth Gurbani, gurbani, gurbani
+ */
+
 #ifndef ASSIGNMENT3_LINKED_LIST_H
 #define ASSIGNMENT3_LINKED_LIST_H
 
 #include "error_handle.h"
 
 struct list_node {
+    //data stored in the node
     void *data;
+    //pointer to next node of the list
     struct list_node *next;
 };
 

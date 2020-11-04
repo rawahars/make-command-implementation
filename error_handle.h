@@ -1,3 +1,8 @@
+/**
+ * @author Harsh Rawat, harsh-rawat, hrawat2
+ * @author Sidharth Gurbani, gurbani, gurbani
+ */
+
 #ifndef ASSIGNMENT3_ERROR_HANDLE_H
 #define ASSIGNMENT3_ERROR_HANDLE_H
 
@@ -29,9 +34,6 @@ void RuleNotFoundError(char *invalid_rule);
 
 void InvalidTargetDependencyError(int line_index, char *line_str, char *dep_name);
 
-/**
- * These are generic errors which are independent of the makefile. Therefore we are not following the standard format.
- * */
 void ValidateMemoryAllocationError(void *arg);
 
 void InvalidArgumentsError(char *error_msg);
