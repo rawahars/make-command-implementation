@@ -214,6 +214,11 @@ command *parseCommand(list_node *list, int index, char *line) {
     return parsed_command;
 }
 
+/*
+ * This method checks if the created vertex has been populated 
+ * in the list of nodes created while traversing the graph 
+ * to detect if cycle is present
+ */
 int isVertexInList(vertex *curr_vertex, list_node *list) {
     if (list->next == NULL) return 0;
     list_node *temp = list->next;
@@ -229,6 +234,11 @@ int isVertexInList(vertex *curr_vertex, list_node *list) {
     return 0;
 }
 
+/*
+ * If the vertex has been checked and there is no cycle detected 
+ * on any of its edges, the vertex is removed from the list of
+ * nodes
+ */
 void removeVertexFromList(list_node *list, vertex *curr_vertex) {
     list_node *temp = list->next;
     rule *current_vertex_rule = (rule *) curr_vertex->data;
@@ -245,6 +255,10 @@ void removeVertexFromList(list_node *list, vertex *curr_vertex) {
     }
 }
 
+/*
+ * This function does depth-first-traversal on every vertex and
+ * detects presence of cycle on the vertext and its edges
+ */
 int dfs(vertex *curr_vertex, list_node *global_list, list_node *curr_list) {
     if (curr_vertex == NULL) return 0;
     if (isVertexInList(curr_vertex, global_list)) {
@@ -271,6 +285,9 @@ int dfs(vertex *curr_vertex, list_node *global_list, list_node *curr_list) {
     return 0;
 }
 
+/*
+ * This is the handler function to detect cycle in the graph
+ */
 int DetectCycleInGraph(list_node *start) {
     list_node *temp = start->next;
     list_node *global_list = CreateLinkedList();
