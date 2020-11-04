@@ -34,14 +34,14 @@ list_node *ParseTargetString(char *line, int line_index) {
     ValidateMemoryAllocationError(currStr);
     for (; index < len; index++) {
         if (line[index] == ' ' || line[index] == '\t') {
-            whitespace_encountered = 1;
+            whitespace_encountered++;
             continue;
         }
         if (line[index] == ':') {
-            currStr[index] = '\0';
+            currStr[index - whitespace_encountered] = '\0';
             break;
         }
-        if(whitespace_encountered && (line[index] != ' ' && line[index] != '\t'))
+        if(whitespace_encountered > 0 && (line[index] != ' ' && line[index] != '\t'))
             TargetParsingError(line_index, line, "invalid format of line");
 
         currStr[index] = line[index];
