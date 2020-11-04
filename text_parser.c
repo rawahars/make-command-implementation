@@ -74,14 +74,10 @@ int filter(char *line, int index) {
 
 int isFirstCharacterLetterOrTab(char *line, int index) {
     int len = strlen(line);
-    if (isalnum(line[0]))
+    if( (!isspace(line[0])) || line[0] == '\t')
         return 1;
-    else if (len > 1 && line[0] == '\t') {
-        if (isalnum(line[1]))
-            return 1;
-        else
-            TargetParsingError(index, line, "first character should be alphanumeric");
-    }
+    else
+        TargetParsingError(index, line, "first character should be alphanumeric");
     return 0;
 }
 
